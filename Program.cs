@@ -5,7 +5,10 @@ using System.Text.Json.Nodes;
 //o using HttpClient client
 
 //http client
-HttpClient client = new();
+HttpClient client = new()
+{
+    BaseAddress = new Uri("http://localhost:5238")
+};
 
 Console.WriteLine("digues un dni");
 string dni = Console.ReadLine();
@@ -23,10 +26,15 @@ if(cp=="")
 
 
 //fem peticio
-var response = await client.GetFromJsonAsync<JsonArray>("http://localhost:5238/Habitatges/" + dni);
+var response = await client.GetFromJsonAsync<List<Habitatge>>("/Habitatges/" + dni);
 
 Console.WriteLine(response);
 
 
 //fer bucle response que miri els cp, si cp igual sum a metros 
+
+foreach (var h in habitatges)
+{
+   //if cp= 
+}
 
