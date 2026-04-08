@@ -34,47 +34,73 @@ var response = await client.GetFromJsonAsync<List<Habitatge>>("/Habitatges/" + d
 
 //fer bucle response que miri els cp, si cp igual sum a metros 
 
-int num_cases =0;
-int num_pisos =0;
-int num_terrenys =0;
+int num_casesTot =0;
+int num_pisosTot =0;
+int num_terrenysTot =0;
 
-int m2cases =0;
-int m2pisos =0;
-int m2terrenys =0;
+int m2casesTot =0;
+int m2pisosTot =0;
+int m2terrenysTot =0;
+
+double descomptefamNumerosa = 0.9;
+double recarrecMenors = 1.05;
+
+double quotaCases = 0;
+double quotaPisos = 0;
+double quotaTerrenys = 0;
+
 
 foreach (var h in response)
 {
-   if ( cp == h.CodiPostal)
+    bool descomptetassa = false;
+   if ( cp == h.CodiPostal )
     {
         switch (h.TipusImmoble)
         {
             case "Casa":
-            num_cases ++;
-            m2cases += h.MetresQuadrats;
+            num_casesTot ++;
+            m2casesTot += h.MetresQuadrats;
+            double preuM2Casa = 0.998;
+            if(h.EsFamiliaNumerosa == true)
+                {
+                    preuM2Casa = preuM2Casa*descomptefamNumerosa;
+                     descomptetassa = true;
+                }
+            if(h.NumMenorsImmoble>0)
+                {
+                    preuM2Casa = preuM2Casa*recarrecMenors;
+                }
+             quotaCases = h.MetresQuadrats*preuM2Casa;
             break;
+
             case "Pis":
-            num_pisos ++;
-            m2pisos += h.MetresQuadrats;
+            num_pisosTot ++;
+            m2pisosTot += h.MetresQuadrats;
+            double preuM2Pis = 0.996;
+             if(h.EsFamiliaNumerosa == true)
+                {
+                    preuM2Pis = preuM2Pis*descomptefamNumerosa;
+                     descomptetassa = true;
+                }
+            quotaPisos = h.MetresQuadrats*preuM2Pis;
             break;
+
             case "Terreny":
-            num_terrenys ++;
-            m2terrenys += h.MetresQuadrats;
+            num_terrenysTot ++;
+            m2terrenysTot += h.MetresQuadrats;
+            double preuM2terreny = 0.136;
+            quotaTerrenys = h.MetresQuadrats*preuM2terreny;
             break;
 
         }
+
         
     } 
 
 }
 
-//Calcul quota a pagar, millor calculkar quota individual per habitatge dins el foreach
-
-double quotaCasa = 0.998;
-double quotaPis = 0.996;
-double quotaTerreny = 0.136;
+//Calcul quota a pagar
 
 
-double quotaTitularCasa = m2cases *quotaCasa;
-double quotaTitularPis = m2pisos *quotaPis;
-double quotaTitularTerreny = m2terrenys *quotaTerreny;
+
 
