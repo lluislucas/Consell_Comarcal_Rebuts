@@ -36,7 +36,6 @@ if(poble=="")
 //per cada persona del poble recorrem tots els habitatges
 
 //fem peticio a l API1
-var response = await client.GetFromJsonAsync<List<Habitatge>>("/Habitatges/" + dni);
 
 var response2 = await client.GetFromJsonAsync<List<Habitatge>>("/ContribuentsMateixPoble/" + poble);
 
@@ -46,9 +45,13 @@ var response2 = await client.GetFromJsonAsync<List<Habitatge>>("/ContribuentsMat
 double descomptefamNumerosa = 0.9;
 double recarrecMenors = 1.05;
 
+//poble => persona => tots habitatges // Persona => habitages
+
 //foreacho titular en titulars habitatges
-foreach(var titular in response2)
+foreach(var p in response2)
 {
+    var response = await client.GetFromJsonAsync<List<Habitatge>>("/Habitatges/" + dni);
+    
     int num_casesTot =0;
     int num_pisosTot =0;
     int num_terrenysTot =0;
@@ -62,12 +65,9 @@ foreach(var titular in response2)
 
     foreach (var h in response)
     {
-        
-    if ( cp == h.CodiPostal )
-        {
             switch (h.TipusImmoble)
             {
-                case "Casa":
+  ****          case "TipusImmoble ==  Casa":
                 num_casesTot ++;
                 m2casesTot += h.MetresQuadrats;
                 double preuM2Casa = 0.998;
@@ -105,24 +105,25 @@ foreach(var titular in response2)
             }   
         } 
     }
-Console.WriteLine("............................");
+                Console.WriteLine("............................");
 
-Console.WriteLine("CONSELL COMARCAL - Taxa Especial sobre els Edificis Comarcals (TEEC)");
+                Console.WriteLine("CONSELL COMARCAL - Taxa Especial sobre els Edificis Comarcals (TEEC)");
 
-Console.WriteLine($"Nom:{titular.NomContribuent} " );
-Console.WriteLine($"Població:{titular.Poblacio} " );
-Console.WriteLine($"Cases: {num_casesTot} - {m2casesTot}" );
-Console.WriteLine($"Pisos: {num_pisosTot} - {m2pisosTot}" );
-Console.WriteLine($"Terrenys: {num_terrenysTot} - {m2terrenysTot}" );
+                Console.WriteLine($"Nom:{titular.NomContribuent} " );
+                Console.WriteLine($"Població:{titular.Poblacio} " );
+                Console.WriteLine($"Cases: {num_casesTot} - {m2casesTot}" );
+                Console.WriteLine($"Pisos: {num_pisosTot} - {m2pisosTot}" );
+                Console.WriteLine($"Terrenys: {num_terrenysTot} - {m2terrenysTot}" );
 
-if (descomptetassa == true)
-    {
-        Console.WriteLine($"S'ha aplicat descompte per familia numerosa del 10%");
+                if (descomptetassa == true)
+                    {
+                        Console.WriteLine($"S'ha aplicat descompte per familia numerosa del 10%");
+                    }
+
+                Console.WriteLine($"Quota: {quotatotal}€" );
+
+                Console.WriteLine("............................");
     }
-
-Console.WriteLine($"Quota: {quotatotal}€" );
-
-Console.WriteLine("............................");
 }
 
 

@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("API-REBUTS")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+d572fbd8a7873dae75f719eaeaf4bc8143f437e3")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+a604271800fdc0bd37b2fccc68cf90630835e5e3")]
 [assembly: System.Reflection.AssemblyProductAttribute("API-REBUTS")]
 [assembly: System.Reflection.AssemblyTitleAttribute("API-REBUTS")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
