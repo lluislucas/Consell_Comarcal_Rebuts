@@ -1,20 +1,20 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\lluis\\Desktop\\Codi\\Programacio\\Xavi\\Level3\\Projectes\\API-REBUTS\\API-REBUTS.csproj": {}
+    "C:\\Users\\user\\Desktop\\Codi\\Programacio\\Xavi\\Level3\\Projectes\\comarcal-rebuts-lluislucas\\API-REBUTS.csproj": {}
   },
   "projects": {
-    "C:\\Users\\lluis\\Desktop\\Codi\\Programacio\\Xavi\\Level3\\Projectes\\API-REBUTS\\API-REBUTS.csproj": {
+    "C:\\Users\\user\\Desktop\\Codi\\Programacio\\Xavi\\Level3\\Projectes\\comarcal-rebuts-lluislucas\\API-REBUTS.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\lluis\\Desktop\\Codi\\Programacio\\Xavi\\Level3\\Projectes\\API-REBUTS\\API-REBUTS.csproj",
+        "projectUniqueName": "C:\\Users\\user\\Desktop\\Codi\\Programacio\\Xavi\\Level3\\Projectes\\comarcal-rebuts-lluislucas\\API-REBUTS.csproj",
         "projectName": "API-REBUTS",
-        "projectPath": "C:\\Users\\lluis\\Desktop\\Codi\\Programacio\\Xavi\\Level3\\Projectes\\API-REBUTS\\API-REBUTS.csproj",
-        "packagesPath": "C:\\Users\\lluis\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\lluis\\Desktop\\Codi\\Programacio\\Xavi\\Level3\\Projectes\\API-REBUTS\\obj\\",
+        "projectPath": "C:\\Users\\user\\Desktop\\Codi\\Programacio\\Xavi\\Level3\\Projectes\\comarcal-rebuts-lluislucas\\API-REBUTS.csproj",
+        "packagesPath": "C:\\Users\\user\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\user\\Desktop\\Codi\\Programacio\\Xavi\\Level3\\Projectes\\comarcal-rebuts-lluislucas\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
-          "C:\\Users\\lluis\\AppData\\Roaming\\NuGet\\NuGet.Config"
+          "C:\\Users\\user\\AppData\\Roaming\\NuGet\\NuGet.Config"
         ],
         "originalTargetFrameworks": [
           "net9.0"
@@ -59,7 +59,7 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.312/PortableRuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.310/PortableRuntimeIdentifierGraph.json"
         }
       }
     }

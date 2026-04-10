@@ -13,24 +13,25 @@ using var client = new HttpClient()
     //client.Dispose();
 
 
-Console.WriteLine("digues un dni");
-string dni = Console.ReadLine();
+/*Console.WriteLine("digues un dni");
+string dni = Console.ReadLine()?? "";
 if(dni=="")
 {
     dni="12345678A";
 }
 
 Console.WriteLine("digues un CP");
-string cp = Console.ReadLine();
+string cp = Console.ReadLine()??"";
 if(cp=="")
 {
     cp="17472";
-}
+} NO CALEN segons el enunciat*/
+
 Console.WriteLine("digues el teu poble");
-string poble = Console.ReadLine();
+string poble = Console.ReadLine()??"";
 if(poble=="")
 {
-    cp="l'Armentera";
+    poble="l'Armentera";
 }
 //busquem un poble per nom o CP
 //per cada persona del poble recorrem tots els habitatges
@@ -47,10 +48,12 @@ double recarrecMenors = 1.05;
 
 //poble => persona => tots habitatges // Persona => habitages
 
-//foreacho titular en titulars habitatges
-foreach(var p in response2)
+//foreach contribuents del poble
+foreach(var titular in response2!) //! per dirli que no sera null
 {
-    var response = await client.GetFromJsonAsync<List<Habitatge>>("/Habitatges/" + dni);
+    var response = await client.GetFromJsonAsync<List<Habitatge>>("/Habitatges/" + titular.DNIContribuent); 
+    // pq Claude diu que "+dni" ha de ser titular.DNIContribuent i no dni, 
+    // pero la ruta al navegador es localhost:XXXX/habitages/dni? pq no dni que ho he demanat per cosnola abans
     
     int num_casesTot =0;
     int num_pisosTot =0;
@@ -63,11 +66,12 @@ foreach(var p in response2)
 
     double quotatotal = 0;
 
-    foreach (var h in response)
+    //lista habitatges de un mateix contribuent en un sol poble
+    foreach (var h in response!) //! per dirli que no sera null
     {
             switch (h.TipusImmoble)
             {
-  ****          case "TipusImmoble ==  Casa":
+                case TipusImmoble.Casa:
                 num_casesTot ++;
                 m2casesTot += h.MetresQuadrats;
                 double preuM2Casa = 0.998;
@@ -83,7 +87,7 @@ foreach(var p in response2)
                 quotatotal = quotatotal + h.MetresQuadrats*preuM2Casa;
                 break;
 
-                case "Pis":
+                case TipusImmoble.Pis:
                 num_pisosTot ++;
                 m2pisosTot += h.MetresQuadrats;
                 double preuM2Pis = 0.996;
@@ -95,7 +99,7 @@ foreach(var p in response2)
                 quotatotal = quotatotal + h.MetresQuadrats*preuM2Pis;
                 break;
 
-                case "Terreny":
+                case TipusImmoble.Terreny:
                 num_terrenysTot ++;
                 m2terrenysTot += h.MetresQuadrats;
                 double preuM2terreny = 0.136;
@@ -104,7 +108,6 @@ foreach(var p in response2)
 
             }   
         } 
-    }
                 Console.WriteLine("............................");
 
                 Console.WriteLine("CONSELL COMARCAL - Taxa Especial sobre els Edificis Comarcals (TEEC)");
@@ -124,7 +127,9 @@ foreach(var p in response2)
 
                 Console.WriteLine("............................");
     }
-}
+
+    
+
 
 
 
