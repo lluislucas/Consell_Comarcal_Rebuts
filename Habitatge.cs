@@ -1,6 +1,6 @@
 class Habitatge
 {
-   public int Identificador {get; set;}
+    public int Identificador {get; set;}
     public string Adreca {get; set;}
     public string Poblacio {get; set;}
     public int CodiPostal {get; set;}
