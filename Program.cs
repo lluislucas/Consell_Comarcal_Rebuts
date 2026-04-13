@@ -1,6 +1,7 @@
-﻿using System.Net.Http;
+﻿
 using System.Net.Http.Json;
-using System.Text.Json.Nodes;
+
+using System.Text.Json;
 
 //o using HttpClient client
 
@@ -38,9 +39,12 @@ if(poble=="")
 
 //fem peticio a l API1
 
-var response2 = await client.GetFromJsonAsync<List<Habitatge>>("/ContribuentsMateixPoble/" + poble);
+/*var response = await httpClient.GetAsync("url-aqui");
+var json = await response.Content.ReadAsStringAsync();
+Console.WriteLine(json);*/ 
 
-
+var llistatHabitatges = await client.GetFromJsonAsync<List<Habitatge>>("/PoblacioLlistaHabitatges/" + poble); //Figueres i Joan
+ 
 //fer bucle response que miri els cp, si cp igual sum a metros 
 
 double descomptefamNumerosa = 0.9;
@@ -49,10 +53,10 @@ double recarrecMenors = 1.05;
 //poble => persona => tots habitatges // Persona => habitages
 
 //foreach contribuents del poble
-foreach(var titular in response2!) //! per dirli que no sera null
+foreach(var habitatge in llistatHabitatges!) //! per dirli que no sera null
 {
-    var response = await client.GetFromJsonAsync<List<Habitatge>>("/Habitatges/" + titular.DNIContribuent); 
-    // pq Claude diu que "+dni" ha de ser titular.DNIContribuent i no dni, 
+    //var response = await client.GetFromJsonAsync<List<Habitatge>>("/Habitatges/" + habitatge.DNIContribuent); 
+    // pq Claude diu que "+dni" ha de ser habitatge.DNIContribuent i no dni, 
     // pero la ruta al navegador es localhost:XXXX/habitages/dni? pq no dni que ho he demanat per cosnola abans
     
     int num_casesTot =0;
@@ -112,8 +116,8 @@ foreach(var titular in response2!) //! per dirli que no sera null
 
                 Console.WriteLine("CONSELL COMARCAL - Taxa Especial sobre els Edificis Comarcals (TEEC)");
 
-                Console.WriteLine($"Nom:{titular.NomContribuent} " );
-                Console.WriteLine($"Població:{titular.Poblacio} " );
+                Console.WriteLine($"Nom:{habitatge.NomContribuent} " );
+                Console.WriteLine($"Població:{habitatge.Poblacio} " );
                 Console.WriteLine($"Cases: {num_casesTot} - {m2casesTot}" );
                 Console.WriteLine($"Pisos: {num_pisosTot} - {m2pisosTot}" );
                 Console.WriteLine($"Terrenys: {num_terrenysTot} - {m2terrenysTot}" );
