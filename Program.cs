@@ -14,14 +14,7 @@ using var client = new HttpClient()
     //client.Dispose();
 
 
-/*Console.WriteLine("digues un dni");
-string dni = Console.ReadLine()?? "";
-if(dni=="")
-{
-    dni="12345678A";
-}
-
-Console.WriteLine("digues un CP");
+/*Console.WriteLine("digues un CP");
 string cp = Console.ReadLine()??"";
 if(cp=="")
 {
@@ -43,8 +36,7 @@ if(poble=="")
 var json = await response.Content.ReadAsStringAsync();
 Console.WriteLine(json);*/ 
 
-var llistatHabitatges = await client.GetFromJsonAsync<List<Habitatge>>("/PoblacioLlistaHabitatges/" + poble); //Figueres i Joan
- 
+var llistatHabitatgesPoble = await client.GetFromJsonAsync<List<Habitatge>>("/PoblacioLlistaHabitatges/" + poble); //Figueres i Joan
 //fer bucle response que miri els cp, si cp igual sum a metros 
 
 double descomptefamNumerosa = 0.9;
@@ -53,7 +45,7 @@ double recarrecMenors = 1.05;
 //poble => persona => tots habitatges // Persona => habitages
 
 //foreach contribuents del poble
-foreach(var habitatge in llistatHabitatges!) //! per dirli que no sera null
+foreach(var habitatge in llistatHabitatgesPoble!) //! per dirli que no sera null
 {
     //var response = await client.GetFromJsonAsync<List<Habitatge>>("/Habitatges/" + habitatge.DNIContribuent); 
     // pq Claude diu que "+dni" ha de ser habitatge.DNIContribuent i no dni, 
@@ -70,47 +62,60 @@ foreach(var habitatge in llistatHabitatges!) //! per dirli que no sera null
 
     double quotatotal = 0;
 
-    //lista habitatges de un mateix contribuent en un sol poble
-    foreach (var h in response!) //! per dirli que no sera null
+    /* Console.WriteLine("digues un dni");
+    string dni = Console.ReadLine()?? "";
+    if(dni=="")
     {
-            switch (h.TipusImmoble)
+        dni="12345678A";
+    }
+
+    var llistatHabitatgesPropietariPoble = await client.GetFromJsonAsync<List<Habitatge>>("/Habitatges/" + dni);*/
+
+    var llistatContribuentsPoble = await client.GetFromJsonAsync<List<Habitatge>>("/ContribuentsMateixPoble/{Poblacio}" + poble);
+    foreach (var d in llistatContribuentsPoble!) //! per dirli que no sera null
+    {
+        var dni = d.DNIContribuent; 
+        if(dni == llistatHabitatgesPoble.DNIContribuent)
+        {
+            switch (d.TipusImmoble)
             {
                 case TipusImmoble.Casa:
                 num_casesTot ++;
-                m2casesTot += h.MetresQuadrats;
+                m2casesTot += d.MetresQuadrats;
                 double preuM2Casa = 0.998;
-                if(h.EsFamiliaNumerosa == true)
+                if(d.EsFamiliaNumerosa == true)
                     {
                         preuM2Casa = preuM2Casa*descomptefamNumerosa;
                         descomptetassa = true;
                     }
-                if(h.NumMenorsImmoble>0)
+                if(d.NumMenorsImmoble>0)
                     {
                         preuM2Casa = preuM2Casa*recarrecMenors;
                     }
-                quotatotal = quotatotal + h.MetresQuadrats*preuM2Casa;
+                quotatotal = quotatotal + d.MetresQuadrats*preuM2Casa;
                 break;
 
                 case TipusImmoble.Pis:
                 num_pisosTot ++;
-                m2pisosTot += h.MetresQuadrats;
+                m2pisosTot += d.MetresQuadrats;
                 double preuM2Pis = 0.996;
-                if(h.EsFamiliaNumerosa == true)
+                if(d.EsFamiliaNumerosa == true)
                     {
                         preuM2Pis = preuM2Pis*descomptefamNumerosa;
                         descomptetassa = true;
                     }
-                quotatotal = quotatotal + h.MetresQuadrats*preuM2Pis;
+                quotatotal = quotatotal + d.MetresQuadrats*preuM2Pis;
                 break;
 
                 case TipusImmoble.Terreny:
                 num_terrenysTot ++;
-                m2terrenysTot += h.MetresQuadrats;
+                m2terrenysTot += d.MetresQuadrats;
                 double preuM2terreny = 0.136;
-                quotatotal = quotatotal + h.MetresQuadrats*preuM2terreny;
+                quotatotal = quotatotal + d.MetresQuadrats*preuM2terreny;
                 break;
 
-            }   
+            } 
+        }  
         } 
                 Console.WriteLine("............................");
 
@@ -130,9 +135,32 @@ foreach(var habitatge in llistatHabitatges!) //! per dirli que no sera null
                 Console.WriteLine($"Quota: {quotatotal}€" );
 
                 Console.WriteLine("............................");
+
+                    num_casesTot =0;
+                    num_pisosTot =0;
+                    num_terrenysTot =0;
+                    descomptetassa = false;
+
+                    m2casesTot =0;
+                    m2pisosTot =0;
+                    m2terrenysTot =0;
+
+                    quotatotal = 0;
     }
 
+/*API => Gnt del poble
+
+foreach (var x in gent)
+{
+    API = cases de x
+    foreach ()
+    {
+        if(!poble)continue;
     
+    
+    
+    }
+}*/
 
 
 
