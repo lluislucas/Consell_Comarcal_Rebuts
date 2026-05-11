@@ -1,171 +1,169 @@
 ﻿
-using System.Net.Http.Json;
+using System.Text.Json.Nodes;
+Dictionary<string, Dictionary<string, List<JsonNode>>> habitatgesXcp = new();
 
-using System.Text.Json;
+string Id;
 
-//o using HttpClient client
+JsonNode HabitatgeSeleccionat;
 
-//http client
-using var client = new HttpClient()
+string Cp;
+string Dni;
+
+int Num_casesTot = 0;
+int Num_pisosTot = 0;
+int Num_terrenysTot = 0;
+bool Descomptetassa = false;
+
+int M2casesTot = 0;
+int M2pisosTot = 0;
+int M2terrenysTot = 0;
+double QuotaGeneral = 0;
+
+
+
+Console.WriteLine("Digues un CP");
+Cp = Console.ReadLine();
+
+////Console.WriteLine("Digues un DNI");
+//Dni = Console.ReadLine();
+
+using var http = new HttpClient();
+var json1 = await http.GetStringAsync("http://localhost:5238/llistadhabitatges");
+
+
+JsonArray llistaHabitatges = JsonNode.Parse(json1)?.AsArray();
+
+for (int i = 0; i < llistaHabitatges.Count; i++)
 {
-    BaseAddress = new Uri("http://localhost:5238")
-};
+    string cparevisar = llistaHabitatges[i]["codiPostal"].ToString();
 
-    //client.Dispose();
-
-
-/*Console.WriteLine("digues un CP");
-string cp = Console.ReadLine()??"";
-if(cp=="")
-{
-    cp="17472";
-} NO CALEN segons el enunciat*/
-
-Console.WriteLine("digues el teu poble");
-string poble = Console.ReadLine()??"";
-if(poble=="")
-{
-    poble="l'Armentera";
-}
-//busquem un poble per nom o CP
-//per cada persona del poble recorrem tots els habitatges
-
-//fem peticio a l API1
-
-/*var response = await httpClient.GetAsync("url-aqui");
-var json = await response.Content.ReadAsStringAsync();
-Console.WriteLine(json);*/ 
-
-var llistatHabitatgesPoble = await client.GetFromJsonAsync<List<Habitatge>>("/PoblacioLlistaHabitatges/" + poble); //Figueres i Joan
-//fer bucle response que miri els cp, si cp igual sum a metros 
-
-double descomptefamNumerosa = 0.9;
-double recarrecMenors = 1.05;
-
-//poble => persona => tots habitatges // Persona => habitages
-
-//foreach contribuents del poble
-foreach(var habitatge in llistatHabitatgesPoble!) //! per dirli que no sera null
-{
-    //var response = await client.GetFromJsonAsync<List<Habitatge>>("/Habitatges/" + habitatge.DNIContribuent); 
-    // pq Claude diu que "+dni" ha de ser habitatge.DNIContribuent i no dni, 
-    // pero la ruta al navegador es localhost:XXXX/habitages/dni? pq no dni que ho he demanat per cosnola abans
-    
-    int num_casesTot =0;
-    int num_pisosTot =0;
-    int num_terrenysTot =0;
-    bool descomptetassa = false;
-
-    int m2casesTot =0;
-    int m2pisosTot =0;
-    int m2terrenysTot =0;
-
-    double quotatotal = 0;
-
-    /* Console.WriteLine("digues un dni");
-    string dni = Console.ReadLine()?? "";
-    if(dni=="")
+    if (Cp == cparevisar || Cp == null)
     {
-        dni="12345678A";
-    }
 
-    var llistatHabitatgesPropietariPoble = await client.GetFromJsonAsync<List<Habitatge>>("/Habitatges/" + dni);*/
+        string dniContribuentArevisar = llistaHabitatges[i]["dniContribuent"].ToString();
 
-    var llistatContribuentsPoble = await client.GetFromJsonAsync<List<Habitatge>>("/ContribuentsMateixPoble/{Poblacio}" + poble);
-    foreach (var d in llistatContribuentsPoble!) //! per dirli que no sera null
-    {
-        var dni = d.DNIContribuent; 
-        if(dni == llistatHabitatgesPoble.DNIContribuent)
+        if (!habitatgesXcp.ContainsKey(cparevisar))
         {
-            switch (d.TipusImmoble)
-            {
-                case TipusImmoble.Casa:
-                num_casesTot ++;
-                m2casesTot += d.MetresQuadrats;
-                double preuM2Casa = 0.998;
-                if(d.EsFamiliaNumerosa == true)
-                    {
-                        preuM2Casa = preuM2Casa*descomptefamNumerosa;
-                        descomptetassa = true;
-                    }
-                if(d.NumMenorsImmoble>0)
-                    {
-                        preuM2Casa = preuM2Casa*recarrecMenors;
-                    }
-                quotatotal = quotatotal + d.MetresQuadrats*preuM2Casa;
-                break;
+            habitatgesXcp[cparevisar] = new();
+        }
 
-                case TipusImmoble.Pis:
-                num_pisosTot ++;
-                m2pisosTot += d.MetresQuadrats;
-                double preuM2Pis = 0.996;
-                if(d.EsFamiliaNumerosa == true)
-                    {
-                        preuM2Pis = preuM2Pis*descomptefamNumerosa;
-                        descomptetassa = true;
-                    }
-                quotatotal = quotatotal + d.MetresQuadrats*preuM2Pis;
-                break;
-
-                case TipusImmoble.Terreny:
-                num_terrenysTot ++;
-                m2terrenysTot += d.MetresQuadrats;
-                double preuM2terreny = 0.136;
-                quotatotal = quotatotal + d.MetresQuadrats*preuM2terreny;
-                break;
-
-            } 
-        }  
-        } 
-                Console.WriteLine("............................");
-
-                Console.WriteLine("CONSELL COMARCAL - Taxa Especial sobre els Edificis Comarcals (TEEC)");
-
-                Console.WriteLine($"Nom:{habitatge.NomContribuent} " );
-                Console.WriteLine($"Població:{habitatge.Poblacio} " );
-                Console.WriteLine($"Cases: {num_casesTot} - {m2casesTot}" );
-                Console.WriteLine($"Pisos: {num_pisosTot} - {m2pisosTot}" );
-                Console.WriteLine($"Terrenys: {num_terrenysTot} - {m2terrenysTot}" );
-
-                if (descomptetassa == true)
-                    {
-                        Console.WriteLine($"S'ha aplicat descompte per familia numerosa del 10%");
-                    }
-
-                Console.WriteLine($"Quota: {quotatotal}€" );
-
-                Console.WriteLine("............................");
-
-                    num_casesTot =0;
-                    num_pisosTot =0;
-                    num_terrenysTot =0;
-                    descomptetassa = false;
-
-                    m2casesTot =0;
-                    m2pisosTot =0;
-                    m2terrenysTot =0;
-
-                    quotatotal = 0;
+        if (!habitatgesXcp[cparevisar].ContainsKey(dniContribuentArevisar))
+        {
+            habitatgesXcp[cparevisar][dniContribuentArevisar] = new();
+        }
+        habitatgesXcp[cparevisar][dniContribuentArevisar].Add(llistaHabitatges[i]);
     }
 
-/*API => Gnt del poble
+}
 
-foreach (var x in gent)
+
+
+foreach(var kvp in habitatgesXcp[Cp])
 {
-    API = cases de x
-    foreach ()
+    List<JsonNode> habitatgesContribuent = kvp.Value;
+        
+
+for (int i = 0; i < habitatgesContribuent.Count; i++)
+{
+   
+
+    double quota_subtotal = 0;
+    double quota_total = 0;
+    int m2DeLaPropietat = int.Parse(habitatgesContribuent[i]["metresQuadrats"].ToString());
+
+    if (habitatgesContribuent[i]["tipusImmoble"].ToString() == "0")// tipusImmoble[0])
     {
-        if(!poble)continue;
-    
-    
-    
+
+        Num_casesTot++;
+        M2casesTot += m2DeLaPropietat;
+        quota_subtotal = 0.998 * m2DeLaPropietat;
+        double descompteFamiliaNumerosa = 0;
+        double incrementMenors = 0;
+
+        if (int.Parse(habitatgesContribuent[i]["habitantsImmoble"].ToString()) >= 5)
+        {
+            descompteFamiliaNumerosa = quota_subtotal * 0.1;
+        }
+        if (int.Parse(habitatgesContribuent[i]["numMenorsImmoble"].ToString()) > 0)
+        {
+            incrementMenors = quota_subtotal * 0.05;
+        }
+
+        quota_total = quota_subtotal - descompteFamiliaNumerosa + incrementMenors;
+
     }
-}*/
+
+    if (habitatgesContribuent[i]["tipusImmoble"].ToString() == "1")
+    {
+        Num_pisosTot++;
+        M2pisosTot += m2DeLaPropietat;
+        quota_subtotal = 0.996 * m2DeLaPropietat;
+        double descompteFamiliaNumerosa = 0;
+        double incrementMenors = 0;
+
+        if (int.Parse(habitatgesContribuent[i]["habitantsImmoble"].ToString()) >= 5)
+        {
+            descompteFamiliaNumerosa = quota_subtotal * 0.1;
+        }
+        if (int.Parse(habitatgesContribuent[i]["numMenorsImmoble"].ToString()) > 0)
+        {
+            incrementMenors = quota_subtotal * 0.05;
+        }
+
+        quota_total = quota_subtotal - descompteFamiliaNumerosa + incrementMenors;
+
+    }
+
+    if (habitatgesContribuent[i]["tipusImmoble"].ToString() == "2")
+    {
+        Num_terrenysTot++;
+        M2terrenysTot += m2DeLaPropietat;
+        quota_subtotal = 0.996 * m2DeLaPropietat;
+    }
+    if (habitatgesContribuent[i]["codiPostal"].ToString() == "17970" || habitatgesContribuent[i]["codiPostal"].ToString() == "17971")
+    {
+        quota_total = quota_total - quota_subtotal * 0.25;
+    }
+    QuotaGeneral += quota_total;
+}
+
+Console.WriteLine("--------------------------------------------------");
+Console.WriteLine("Consell Comarcal - Taxa Especial sobre Habitatges");
+Console.WriteLine($"");
+
+Console.WriteLine($"Nom:{habitatgesXcp[Cp][kvp.Key][0]["nomContribuent"]}");
+Console.WriteLine($"Poblacio:{habitatgesXcp[Cp][kvp.Key][0]["poblacio"]}");
 
 
+if (M2casesTot > 0)
+{
+    Console.WriteLine($"Cases:{Num_casesTot} - {M2casesTot}m2");
+}
+else
+{
+    Console.WriteLine($"Cases:0");
+}
 
+if (M2pisosTot > 0)
+{
+    Console.WriteLine($"Pisos:{Num_pisosTot} - {M2pisosTot}m2");
+}
+else
+{
+    Console.WriteLine($"Pisos:0");
+}
 
+if (M2terrenysTot > 0)
+{
+    Console.WriteLine($"Terrenys:{Num_terrenysTot} - {M2terrenysTot} m2");
+}
+else
+{
+    Console.WriteLine($"Terrenys:0");
+}
 
+Console.WriteLine($"");
 
-
-
+Console.WriteLine($"QUOTA:{Math.Round(QuotaGeneral, 2)}€ ");
+Console.WriteLine("--------------------------------------------------");
+}
